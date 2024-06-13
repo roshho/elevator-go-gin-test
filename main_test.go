@@ -12,10 +12,10 @@ import (
 
 func TestElevatorLevel(t *testing.T) {
 	elevatorA := Elevator{
-		elevatorCurrentF: 1,
-		userCurrentF:     1,
-		userFinalF:       1,
-		doorOpen:         false,
+		ElevatorCurrentF: 1,
+		UserCurrentF:     1,
+		UserFinalF:       1,
+		DoorOpen:         false,
 	}
 
 	var tests = []struct {
@@ -32,7 +32,7 @@ func TestElevatorLevel(t *testing.T) {
 		// t.Run enables running "subtests", one for each table entry. These are shown separately when executing `go test -v`.
 		testname := fmt.Sprintf("%d,%d", tt.a, tt.b)
 		t.Run(testname, func(t *testing.T) { // from testing lib
-			ans := elevatorA.elevatorLog
+			ans := elevatorA.ElevatorLog
 			if reflect.DeepEqual(ans, tt.want) {
 				t.Errorf("got %d, want %d", ans, tt.want)
 			}
