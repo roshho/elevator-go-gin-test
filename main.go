@@ -4,6 +4,7 @@
 this patches?
 localhost:8081/?UserCurrentF=6&UserFinalF=3
 
+mySQL Source: https://medium.com/@amberkakkar01/gin-and-database-integration-bridging-the-gap-between-sql-and-nosql-9c251a1c9fa9
 
 */
 
@@ -18,24 +19,6 @@ import (
 )
 
 func main() {
-	// elevatorA := Elevator{
-	// 	SN:               1,
-	// 	ElevatorCurrentF: 1,
-	// 	UserCurrentF:     1,
-	// 	UserFinalF:       1,
-	// 	DoorOpen:         false,
-	// 	ElevatorLog:      make([]int, 0),
-	// }
-
-	// // functional
-	// // CLI input test
-	// elevatorStartingTemp := elevatorA.ElevatorCurrentF
-	// fmt.Println("Enter your current floor:")
-	// fmt.Scanln(&elevatorA.UserCurrentF)
-	// fmt.Println("Enter your destination floor:")
-	// fmt.Scan(&elevatorA.UserFinalF)
-
-	// fmt.Printf("Starting at %dF, ending at %dF", elevatorStartingTemp, elevatorA.ElevatorOperation())
 
 	router := gin.Default()
 	router.GET("/", getElevator)
@@ -43,10 +26,7 @@ func main() {
 
 	router.Run("localhost:8080")
 
-	// Complete by 230pm
-	// CLI move to API
-	// connect DB for new "elevators"
-	// upload to git
+	// db, err = sqlx.Connect("mysql", "test-user:1234@tcp(127.0.0.1:3306)/test-db")
 }
 
 type Elevator struct {
@@ -59,19 +39,25 @@ type Elevator struct {
 }
 
 var elevators = Elevator{
-	SN: 1, ElevatorCurrentF: 1, UserCurrentF: 3, UserFinalF: 8, DoorOpen: false, ElevatorLog: []int{1, 2, 3},
+	SN: 1, ElevatorCurrentF: 1, UserCurrentF: 3, UserFinalF: 8, DoorOpen: false, ElevatorLog: []int{},
 }
 
 func getElevator(c *gin.Context) {
 	c.IndentedJSON(http.StatusOK, elevators)
+
+	// var users []User
+	// err := db.Select(&users, "SELECT * FROM users")
+	// c.JSON(200, users)
+
 }
 
 func putElevator(c *gin.Context) {
 	userCurrent := c.Query("usercurrentf") // ??? is this the most efficient way
 	userFinal := c.Query("userfinalf")
-	elevators.UserCurrentF, _ = strconv.Atoi(userCurrent) // ??? not sure if this is best method
+	elevators.UserCurrentF, _ = strconv.Atoi(userCurrent) // ??? not sure if this is best method - considered public scope despite under class from struct
 	elevators.UserFinalF, _ = strconv.Atoi(userFinal)
-	// c.String(http.StatusOK, "You're: %v, going to: %v", elevators.UserCurrentF, elevators.UserFinalF)
+	c.String(http.StatusOK, "You're: %v, going to: %v", elevators.UserCurrentF, elevators.ElevatorOperation())
+
 }
 
 // Method for Elevator struct
@@ -82,7 +68,7 @@ func (e *Elevator) ElevatorOperation() int {
 	e.ElevatorLog = append(e.ElevatorLog, e.ElevatorCurrentF) // log starting floor
 
 	tempDoWhile := false
-	for tempDoWhile == false { // e.userCurrentF == e.userFinalF doesn't work bcos user floor would never change, e.elevatorCurrentF != e.userFinalF also doesn't work if currentF == finalF, but user on different F
+	for tempDoWhile == false {
 		if e.UserCurrentF == e.UserFinalF {
 			fmt.Println("Select a different destination floor")
 			break // or to make it run repeatedly use tempDoWhile = true
